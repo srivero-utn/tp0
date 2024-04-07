@@ -1,4 +1,5 @@
 #include "client.h"
+#include <readline/readline.h>
 
 int main(void)
 {
@@ -19,16 +20,32 @@ int main(void)
 	// Usando el logger creado previamente
 	// Escribi: "Hola! Soy un log"
 
+	logger = log_create(".//tp0.log", "log_tp0", true, LOG_LEVEL_INFO);
+	
 
 	/* ---------------- ARCHIVOS DE CONFIGURACION ---------------- */
 
-	config = iniciar_config();
 
-	// Usando el config creado previamente, leemos los valores del config y los 
-	// dejamos en las variables 'ip', 'puerto' y 'valor'
+
+	config = iniciar_config();
+    config = config_create(".//cliente.config");
+	
+	if (config == NULL) {
+		// ¡No se pudo crear el config!
+		// Terminemos el programa
+		//exit();
+	}
+
+    // Usando el config creado previamente, leemos los valores del config y los 
+    // dejamos en las variables 'ip', 'puerto' y 'valor'
+
+	valor = config_get_string_value(config, "CLAVE");
+	ip = config_get_string_value(config, "IP");
+    puerto = config_get_string_value(config, "PUERTO");
 
 	// Loggeamos el valor de config
 
+	log_info(logger, valor);
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
@@ -45,7 +62,6 @@ int main(void)
 
 	// Armamos y enviamos el paquete
 	paquete(conexion);
-
 	terminar_programa(conexion, logger, config);
 
 	/*---------------------------------------------------PARTE 5-------------------------------------------------------------*/
@@ -71,12 +87,19 @@ void leer_consola(t_log* logger)
 	char* leido;
 
 	// La primera te la dejo de yapa
-	leido = readline("> ");
+	while (1) {
+        leido = readline(">");
 
-	// El resto, las vamos leyendo y logueando hasta recibir un string vacío
+		// El resto, las vamos leyendo y logueando hasta recibir un string vacío
+        if (strcmp(leido, "exit") == 0) {
+            break;
+        }
+        printf("%s\n", leido);
+		
+		// ¡No te olvides de liberar las lineas antes de regresar!
+		free(leido);
+    }
 
-
-	// ¡No te olvides de liberar las lineas antes de regresar!
 
 }
 
@@ -97,4 +120,6 @@ void terminar_programa(int conexion, t_log* logger, t_config* config)
 {
 	/* Y por ultimo, hay que liberar lo que utilizamos (conexion, log y config) 
 	  con las funciones de las commons y del TP mencionadas en el enunciado */
+
+	log_destroy(logger);
 }
