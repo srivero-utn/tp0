@@ -91,7 +91,7 @@ void leer_consola(t_log* logger)
         leido = readline(">");
 
 		// El resto, las vamos leyendo y logueando hasta recibir un string vacío
-        if (strcmp(leido, "exit") == 0) {
+        if (strcmp(leido, "") == 0) {
             break;
         }
         printf("%s\n", leido);
@@ -99,8 +99,6 @@ void leer_consola(t_log* logger)
 		// ¡No te olvides de liberar las lineas antes de regresar!
 		free(leido);
     }
-
-
 }
 
 void paquete(int conexion)
